@@ -1,11 +1,10 @@
-from functools import singledispatch
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
-from PyQt5.uic import loadUi  # UI Xml 정보를 Class로 변환
+from PyQt5.uic import loadUi  # Convert UI Xml information to Class
 from sqlite3 import *
 import sys
 
-class Database:
+class Database:  # Data controlled by DB sql
     @staticmethod
     def createtable():
         try:
@@ -27,7 +26,7 @@ class Database:
             db.commit()
             db.close()
         except Exception as err:
-            print("에러: ", err)
+            print("err: ", err)
 
     @staticmethod
     def viewtable():
@@ -39,7 +38,7 @@ class Database:
             dt = [n for n in cur]
             return dt
         except Exception as err:
-            print("에러: ", err)
+            print("err: ", err)
 
     @staticmethod
     def searchtable(str):
@@ -51,7 +50,7 @@ class Database:
             dt = [n for n in cur]
             return dt
         except Exception as err:
-            print("검색 에러: ", err)
+            print("err: ", err)
 
     @staticmethod
     def updatetable(modiftext, modifcnt, smodifdate, cur):
@@ -64,7 +63,8 @@ class Database:
             db.commit()
             db.close()
         except Exception as err:
-            print("에러: ", err)
+            print("err: ", err)
+            
 
 class MyInputDlg:
     def __init__(self):
@@ -86,7 +86,6 @@ class MyModifyDlg:
         self.ui.close()
 
 
-
 class MySearchDlg:
     def __init__(self):
         self.ui = loadUi('search.ui')
@@ -99,7 +98,7 @@ class MySearchDlg:
 class mymain():
     def __init__(self):
         Database.createtable()
-        self.ui = loadUi('homework.ui')  # Dialog 객체로 리턴
+        self.ui = loadUi('homework.ui')  # return Dialog object
         self.list_initialization()
         self.ui.actionInput.triggered.connect(self.inputdlg)
         self.ui.actionView.triggered.connect(self.viewdlg)
@@ -107,14 +106,14 @@ class mymain():
         self.ui.actionSearch.triggered.connect(self.searchdlg)
         self.ui.show()
 
-    def addtabledata(self, name, cnt, date):
+    def addtabledata(self, name, cnt, date):  # Tablewidget
         n = self.ui.tableWidget.rowCount()
         self.ui.tableWidget.setRowCount(n+1)
         self.ui.tableWidget.setItem(n, 0, QTableWidgetItem(name))
         self.ui.tableWidget.setItem(n, 1, QTableWidgetItem(str(cnt)))
         self.ui.tableWidget.setItem(n, 2, QTableWidgetItem(str(date)))
 
-    # 전체 검색할 때 사용하는 메소드
+    # Select * from product
     def list_initialization(self):
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(3)
@@ -123,7 +122,7 @@ class mymain():
         for name, cnt, date in data:
             self.addtabledata(name, cnt, date)
 
-    # 일부 검색할 때 사용하는 메소드
+    # Select * from product where prodname=?
     def list_search(self, str):
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(3)
